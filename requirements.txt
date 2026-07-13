@@ -1,0 +1,5 @@
+anthropic>=0.40.0
+requests>=2.31.0
+# optional — only needed for --database message-store introspection:
+sqlalchemy>=2.0
+psycopg2-binary>=2.9   # if PostgreSQL is used as the database
