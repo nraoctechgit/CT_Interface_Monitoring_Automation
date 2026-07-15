@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mirth Operations Console — Agentic Incident Resolver</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <div class="brand-title">Mirth Operations Console</div>
+        <div class="brand-sub">Agentic Incident Resolver · powered by Claude</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="env-toggle">
+        <label class="switch">
+          <input type="checkbox" id="mockToggle" checked />
+          <span class="slider"></span>
+        </label>
+        <span id="envLabel" class="env-label">Mock environment</span>
+      </div>
+      <div class="model-chip" title="Diagnosis model">{{ model }}</div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: live environment -->
+    <section class="col col-left">
+      <div class="card">
+        <div class="card-head">
+          <h2>Environment health</h2>
+          <span id="sourceBadge" class="source-badge">—</span>
+        </div>
+        <div id="vitals" class="vitals">
+          <div class="vital skeleton"></div>
+          <div class="vital skeleton"></div>
+          <div class="vital skeleton"></div>
+          <div class="vital skeleton"></div>
+        </div>
+        <div class="subhead">Channels</div>
+        <div id="channels" class="channels"></div>
+        <div class="subhead">Recent log</div>
+        <pre id="logTail" class="log-tail">loading…</pre>
+      </div>
+    </section>
+
+    <!-- CENTER: run + diagnosis -->
+    <section class="col col-center">
+      <div class="card run-card">
+        <div class="card-head">
+          <h2>Diagnose an incident</h2>
+        </div>
+        <label class="field-label" for="scenario">Pick a scenario or describe the symptom</label>
+        <select id="scenario">
+          {% for s in scenarios %}<option value="{{ s.id }}" data-symptom="{{ s.symptom }}">{{ s.title }}</option>{% endfor %}
+          <option value="custom">✎ Custom symptom…</option>
+        </select>
+        <textarea id="symptom" rows="3" spellcheck="false"></textarea>
+        <button id="runBtn" class="run-btn">
+          <span class="run-btn-label">Run diagnosis</span>
+        </button>
+      </div>
+
+      <!-- investigation timeline -->
+      <div id="timelineCard" class="card hidden">
+        <div class="card-head"><h2>Investigation</h2><span id="timelineStatus" class="pulse-badge">working…</span></div>
+        <ol id="timeline" class="timeline"></ol>
+      </div>
+
+      <!-- diagnosis result -->
+      <div id="result" class="result"></div>
+    </section>
+
+    <!-- RIGHT: taxonomy reference -->
+    <section class="col col-right">
+      <div class="card">
+        <div class="card-head"><h2>Failure taxonomy</h2></div>
+        <p class="muted small">The agent grounds every diagnosis in this 11-layer reference.</p>
+        <div class="tax-list">
+          {% for n, name, modes in taxonomy %}
+          <details class="tax-layer">
+            <summary><span class="tax-num">{{ n }}</span>{{ name }}</summary>
+            <ul>{% for mode, mit in modes %}<li>{{ mode }}</li>{% endfor %}</ul>
+          </details>
+          {% endfor %}
+        </div>
+        <div class="subhead">Dominant real-incident patterns</div>
+        <ol class="dominant">
+          {% for d in dominant %}<li>{{ d }}</li>{% endfor %}
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Read-only investigation · remediation is recommend-first · destructive steps are never auto-run</span>
+  </footer>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
